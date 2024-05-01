@@ -2,6 +2,7 @@ package code;
 
 import database.EmfSingleton;
 import entities.EmpleadoEntity;
+import entities.ObraEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
@@ -9,18 +10,18 @@ import java.util.ArrayList;
 
 public class ConsultarEmpleados {
     public static void cambiarObra() {
-        String empleado = listarEmpleados("Introduzca el nombre del empleado");
-        String obra;
+        EmpleadoEntity empleado = listarEmpleados("Introduzca el nombre del empleado ('0' para salir)");
+        ObraEntity obra;
         try {
             EntityManager em = EmfSingleton.getInstance().getEmf().createEntityManager();
             // Conseguir el empleado
-            Query listarObras = em.createQuery("from EmpleadoEntity where nombre = ?1");
-            listarObras.setParameter(1, empleado);
+            Query listarObras = em.createQuery("from EmpleadoEntity where id = ?1");
+            listarObras.setParameter(1, empleado.getId());
             ArrayList<EmpleadoEntity> listaEmpleados = (ArrayList<EmpleadoEntity>) listarObras.getResultList();
 
-            obra = ConsultarObras.listarObras("Que obra quieres asignarle a " + empleado);
+            obra = ConsultarObras.listarObras("Que obra quieres asignarle a " + empleado.getNombre() + " ('0' para salir)");
             for (EmpleadoEntity e : listaEmpleados) {
-                e.setNombreObra(obra);
+                e.setIdObra(obra.getId());
             }
         } catch (Exception e) {
             System.err.println(">>> Error: " + e.getMessage());
@@ -28,32 +29,36 @@ public class ConsultarEmpleados {
     }
 
     //**************************************** Funciones para la pedida de datos ****************************************
-    public static String listarEmpleados(String mensaje) {
+    public static EmpleadoEntity listarEmpleados(String mensaje) {
         EntityManager em = EmfSingleton.getInstance().getEmf().createEntityManager();
-        String empleado = "";
-        boolean empleadoValido = false;
+        String nombreEmpleado = "";
+        EmpleadoEntity empleado = null;
 
         try {
+            // Se consigue la lista de todos los empleados en la base de datos.
             Query listarEmpleados = em.createQuery("from EmpleadoEntity");
             ArrayList<EmpleadoEntity> listaEmpleados = (ArrayList<EmpleadoEntity>) listarEmpleados.getResultList();
 
-            // Listar todos los empleados
-            System.out.println("******************************");
-            for (EmpleadoEntity e : listaEmpleados) {
-                System.out.println(e.getDni() + ". " + e.getNombre());
-            }
-            System.out.println("******************************");
-            empleado = libs.Leer.pedirCadena(mensaje);
-
-            // Comprobacion de que el empleado introducido existe
-            for (EmpleadoEntity e : listaEmpleados) {
-                if (e.getNombre().toLowerCase().contains(empleado.toLowerCase())) {
-                    empleadoValido = true;
+            // Se ejecuta el código hasta que el usuario introduzca lo pedido.
+            while (empleado == null || nombreEmpleado != "0") {
+                // Se listan todos los empleados y se pide que introduzca el nombre del empleado.
+                System.out.println("******************************");
+                for (EmpleadoEntity e : listaEmpleados) {
+                    System.out.println(e.getDni() + ". " + e.getNombre());
                 }
-            }
+                System.out.println("******************************");
+                nombreEmpleado = libs.Leer.pedirCadena(mensaje);
 
-            if (!empleadoValido) {
-                System.out.println("El empleado introducido no existe");
+                // Comprobacion de que el empleado introducido existe.
+                for (EmpleadoEntity e : listaEmpleados) {
+                    if (e.getNombre().equalsIgnoreCase(nombreEmpleado)) {
+                        empleado = e;
+                    }
+                }
+
+                if (empleado == null) {
+                    System.out.println("El empleado introducido no existe");
+                }
             }
         } catch (Exception e) {
             System.err.println(">>> Error: " + e.getMessage());
@@ -61,10 +66,6 @@ public class ConsultarEmpleados {
             em.close();
         }
 
-        if (empleadoValido) {
-            return empleado;
-        } else {
-            return null;
-        }
+        return empleado;
     }
 }

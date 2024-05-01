@@ -3,15 +3,16 @@ package entities;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.util.Collection;
 import java.util.Objects;
 
 @Entity
-@Table(name = "obra", schema = "constructora", catalog = "")
+@Table(name = "obra", schema = "constructoraH", catalog = "")
 public class ObraEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private int id;
     @Basic
     @Column(name = "nombre", nullable = false, length = 50)
     private String nombre;
@@ -21,18 +22,16 @@ public class ObraEntity {
     @Basic
     @Column(name = "entrega", nullable = true)
     private Date entrega;
-    @ManyToOne
-    @JoinColumn(name = "nombre", referencedColumnName = "nombreObra", nullable = false)
-    private EmpleadoEntity empleadoByNombre;
-    @ManyToOne
-    @JoinColumn(name = "nombre", referencedColumnName = "nombreObra", nullable = false)
-    private MaquinariaEntity maquinariaByNombre;
+    @OneToMany(mappedBy = "obraByIdObra")
+    private Collection<EmpleadoEntity> empleadosById;
+    @OneToMany(mappedBy = "obraByIdObra")
+    private Collection<MaquinariaEntity> maquinariasById;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -65,7 +64,7 @@ public class ObraEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ObraEntity that = (ObraEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(nombre, that.nombre) && Objects.equals(direccion, that.direccion) && Objects.equals(entrega, that.entrega);
+        return id == that.id && Objects.equals(nombre, that.nombre) && Objects.equals(direccion, that.direccion) && Objects.equals(entrega, that.entrega);
     }
 
     @Override
@@ -73,19 +72,19 @@ public class ObraEntity {
         return Objects.hash(id, nombre, direccion, entrega);
     }
 
-    public EmpleadoEntity getEmpleadoByNombre() {
-        return empleadoByNombre;
+    public Collection<EmpleadoEntity> getEmpleadosById() {
+        return empleadosById;
     }
 
-    public void setEmpleadoByNombre(EmpleadoEntity empleadoByNombre) {
-        this.empleadoByNombre = empleadoByNombre;
+    public void setEmpleadosById(Collection<EmpleadoEntity> empleadosById) {
+        this.empleadosById = empleadosById;
     }
 
-    public MaquinariaEntity getMaquinariaByNombre() {
-        return maquinariaByNombre;
+    public Collection<MaquinariaEntity> getMaquinariasById() {
+        return maquinariasById;
     }
 
-    public void setMaquinariaByNombre(MaquinariaEntity maquinariaByNombre) {
-        this.maquinariaByNombre = maquinariaByNombre;
+    public void setMaquinariasById(Collection<MaquinariaEntity> maquinariasById) {
+        this.maquinariasById = maquinariasById;
     }
 }

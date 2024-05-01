@@ -8,7 +8,7 @@ public class EmfSingleton {
     private static final EmfSingleton emfSinstancia = new EmfSingleton();
 
     // Unidad de persistencia donde estan las entidades
-    static private final String PERSISTENCE_UNIT_NAME = "defalut";
+    static private final String PERSISTENCE_UNIT_NAME = "default";
 
     // La factoria se define como privada
     private EntityManagerFactory emf = null;

@@ -5,24 +5,38 @@ import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "maquinaria", schema = "constructora", catalog = "")
+@Table(name = "maquinaria", schema = "constructoraH", catalog = "")
 public class MaquinariaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
+    @Column(name = "id", nullable = false)
+    private int id;
+    @Basic
     @Column(name = "matricula", nullable = false, length = 7)
     private String matricula;
     @Basic
     @Column(name = "modelo", nullable = false, length = 20)
     private String modelo;
     @Basic
-    @Column(name = "empleado", nullable = true, length = 9)
-    private String empleado;
+    @Column(name = "idEmpleado", nullable = true)
+    private Integer idEmpleado;
     @Basic
-    @Column(name = "nombreObra", nullable = true, length = 50)
-    private String nombreObra;
+    @Column(name = "idObra", nullable = true)
+    private Integer idObra;
     @ManyToOne
-    @JoinColumn(name = "empleado", referencedColumnName = "dni")
-    private EmpleadoEntity empleadoByEmpleado;
+    @JoinColumn(name = "idEmpleado", referencedColumnName = "id")
+    private EmpleadoEntity empleadoByIdEmpleado;
+    @ManyToOne
+    @JoinColumn(name = "idObra", referencedColumnName = "id")
+    private ObraEntity obraByIdObra;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getMatricula() {
         return matricula;
@@ -40,20 +54,20 @@ public class MaquinariaEntity {
         this.modelo = modelo;
     }
 
-    public String getEmpleado() {
-        return empleado;
+    public Integer getIdEmpleado() {
+        return idEmpleado;
     }
 
-    public void setEmpleado(String empleado) {
-        this.empleado = empleado;
+    public void setIdEmpleado(Integer idEmpleado) {
+        this.idEmpleado = idEmpleado;
     }
 
-    public String getNombreObra() {
-        return nombreObra;
+    public Integer getIdObra() {
+        return idObra;
     }
 
-    public void setNombreObra(String nombreObra) {
-        this.nombreObra = nombreObra;
+    public void setIdObra(Integer idObra) {
+        this.idObra = idObra;
     }
 
     @Override
@@ -61,19 +75,27 @@ public class MaquinariaEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MaquinariaEntity that = (MaquinariaEntity) o;
-        return Objects.equals(matricula, that.matricula) && Objects.equals(modelo, that.modelo) && Objects.equals(empleado, that.empleado) && Objects.equals(nombreObra, that.nombreObra);
+        return id == that.id && Objects.equals(matricula, that.matricula) && Objects.equals(modelo, that.modelo) && Objects.equals(idEmpleado, that.idEmpleado) && Objects.equals(idObra, that.idObra);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(matricula, modelo, empleado, nombreObra);
+        return Objects.hash(id, matricula, modelo, idEmpleado, idObra);
     }
 
-    public EmpleadoEntity getEmpleadoByEmpleado() {
-        return empleadoByEmpleado;
+    public EmpleadoEntity getEmpleadoByIdEmpleado() {
+        return empleadoByIdEmpleado;
     }
 
-    public void setEmpleadoByEmpleado(EmpleadoEntity empleadoByEmpleado) {
-        this.empleadoByEmpleado = empleadoByEmpleado;
+    public void setEmpleadoByIdEmpleado(EmpleadoEntity empleadoByIdEmpleado) {
+        this.empleadoByIdEmpleado = empleadoByIdEmpleado;
+    }
+
+    public ObraEntity getObraByIdObra() {
+        return obraByIdObra;
+    }
+
+    public void setObraByIdObra(ObraEntity obraByIdObra) {
+        this.obraByIdObra = obraByIdObra;
     }
 }

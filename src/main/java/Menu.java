@@ -23,7 +23,7 @@ public class Menu {
                 case "1":
                     code.ConsultarObras.darAltaObra();
                     break;
-                case "2":   // TODO
+                case "2":
                     code.ConsultarEmpleados.cambiarObra();
                     break;
                 default:

@@ -1,6 +1,7 @@
 package code;
 
 import database.EmfSingleton;
+import entities.EmpleadoEntity;
 import entities.ObraEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -10,9 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class ConsultarObras {
-    // TODO seguramente de problemas por el id de la obra
     public static void darAltaObra() {
-        String nombre = ConsultarEmpleados.listarEmpleados("Introduzca el nombre del empleado responsable de la obra");
+        EmpleadoEntity empleado = ConsultarEmpleados.listarEmpleados("Introduzca el nombre del empleado responsable de la obra ('0' para salir)");
         String direccion = libs.Leer.pedirCadena("Introduzca la direccion donde se realizara la obra");
         Date fecha = libs.Leer.pedirDate("Introduzca la fecha de entrega");
 
@@ -23,7 +23,7 @@ public class ConsultarObras {
             transaction.begin();
 
             ObraEntity obra = new ObraEntity();
-            obra.setNombre(nombre);
+            obra.setNombre(empleado.getNombre());
             obra.setDireccion(direccion);
             obra.setEntrega((java.sql.Date) fecha);
 
@@ -35,32 +35,37 @@ public class ConsultarObras {
     }
 
     //**************************************** Funciones para la pedida de datos ****************************************
-    public static String listarObras(String mensaje) {
+    public static ObraEntity listarObras(String mensaje) {
         EntityManager em = EmfSingleton.getInstance().getEmf().createEntityManager();
-        String obra = "";
-        boolean obraValida = false;
+        String nombreObra = "";
+        ObraEntity obra = null;
 
         try {
+            // Se consigue la lista de todas las obras en la base de datos.
             Query listarObras = em.createQuery("from ObraEntity");
             ArrayList<ObraEntity> listaObras = (ArrayList<ObraEntity>) listarObras.getResultList();
 
-            // Listar todas las obras
-            System.out.println("******************************");
-            for (ObraEntity o : listaObras) {
-                System.out.println(o.getId() + ". " + o.getNombre());
-            }
-            System.out.println("******************************");
-            obra = libs.Leer.pedirCadena(mensaje);
-
-            // Comprobacion de que la obra introducida existe
-            for (ObraEntity o : listaObras) {
-                if (o.getNombre().toLowerCase().contains(obra.toLowerCase())) {
-                    obraValida = true;
+            // Se ejecuta el código hasta que el usuario introduzca lo pedido.
+            while (obra == null || nombreObra != "0") {
+                // Se listan todas las obras y se pide que introduzca el nombre de la obra.
+                System.out.println("******************************");
+                for (ObraEntity o : listaObras) {
+                    System.out.println(o.getId() + ". " + o.getNombre());
                 }
-            }
+                System.out.println("******************************");
+                nombreObra = libs.Leer.pedirCadena(mensaje);
 
-            if (!obraValida) {
-                System.out.println("La obra introducida no existe");
+                // Comprobacion de que la obra introducida existe
+                for (ObraEntity o : listaObras) {
+                    if (o.getNombre().equalsIgnoreCase(nombreObra)) {
+                        obra = o;
+                    }
+                }
+
+                // Si la obra introducia no existe, se da un menaje de error.
+                if (obra == null) {
+                    System.out.println("La obra introducida no existe");
+                }
             }
         } catch (Exception e) {
             System.err.println(">>> Error: " + e.getMessage());
@@ -68,10 +73,7 @@ public class ConsultarObras {
             em.close();
         }
 
-        if (obraValida) {
-            return obra;
-        } else {
-            return null;
-        }
+
+        return obra;
     }
 }
