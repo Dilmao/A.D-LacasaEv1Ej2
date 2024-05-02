@@ -285,4 +285,25 @@ public class Leer {
         }
         return dato;
     }
+
+    static public java.sql.Date pedirDateSQL(final String texto) {
+        BufferedReader dataIn = new BufferedReader(new InputStreamReader(System.in));
+        java.sql.Date dato = null;
+        boolean error = true;
+        while (error) {
+            try {
+                mostrarEnPantalla(texto);
+                String input = dataIn.readLine();
+                dato = java.sql.Date.valueOf(input);
+                error = false;
+            } catch (IOException e) {
+                mostrarEnPantalla("Vuelve a introducir el dato, por favor. ");
+                error = true;
+            } catch (NumberFormatException e) {
+                mostrarEnPantalla("El dato introducido no es decimal.");
+                error = true;
+            }
+        }
+        return dato;
+    }
 }

@@ -24,10 +24,10 @@ public class MaquinariaEntity {
     @Column(name = "idObra", nullable = true)
     private Integer idObra;
     @ManyToOne
-    @JoinColumn(name = "idEmpleado", referencedColumnName = "id")
+    @JoinColumn(name = "idEmpleado", referencedColumnName = "id", insertable = false, updatable = false)
     private EmpleadoEntity empleadoByIdEmpleado;
     @ManyToOne
-    @JoinColumn(name = "idObra", referencedColumnName = "id")
+    @JoinColumn(name = "idObra", referencedColumnName = "id", insertable = false, updatable = false)
     private ObraEntity obraByIdObra;
 
     public int getId() {

@@ -25,7 +25,7 @@ public class EmpleadoEntity {
     @Column(name = "idObra", nullable = true)
     private Integer idObra;
     @ManyToOne
-    @JoinColumn(name = "idObra", referencedColumnName = "id")
+    @JoinColumn(name = "idObra", referencedColumnName = "id", insertable = false, updatable = false)
     private ObraEntity obraByIdObra;
     @OneToMany(mappedBy = "empleadoByIdEmpleado")
     private Collection<MaquinariaEntity> maquinariasById;

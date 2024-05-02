@@ -6,15 +6,16 @@ import entities.ObraEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
+import libs.Leer;
 
+import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class ConsultarObras {
     public static void darAltaObra() {
         EmpleadoEntity empleado = ConsultarEmpleados.listarEmpleados("Introduzca el nombre del empleado responsable de la obra ('0' para salir)");
-        String direccion = libs.Leer.pedirCadena("Introduzca la direccion donde se realizara la obra");
-        Date fecha = libs.Leer.pedirDate("Introduzca la fecha de entrega");
+        String direccion =Leer.pedirCadena("Introduzca la direccion donde se realizara la obra");
+        Date fecha = Leer.pedirDateSQL("Introduzca la fecha de entrega (yyyy-MM-dd)");
 
         // Creacion de la obra
         try {
@@ -25,7 +26,7 @@ public class ConsultarObras {
             ObraEntity obra = new ObraEntity();
             obra.setNombre(empleado.getNombre());
             obra.setDireccion(direccion);
-            obra.setEntrega((java.sql.Date) fecha);
+            obra.setEntrega(fecha);
 
             em.persist(obra);
             transaction.commit();
@@ -46,14 +47,14 @@ public class ConsultarObras {
             ArrayList<ObraEntity> listaObras = (ArrayList<ObraEntity>) listarObras.getResultList();
 
             // Se ejecuta el código hasta que el usuario introduzca lo pedido.
-            while (obra == null || nombreObra != "0") {
+            while (obra == null && !nombreObra.equals("0")) {
                 // Se listan todas las obras y se pide que introduzca el nombre de la obra.
                 System.out.println("******************************");
                 for (ObraEntity o : listaObras) {
                     System.out.println(o.getId() + ". " + o.getNombre());
                 }
                 System.out.println("******************************");
-                nombreObra = libs.Leer.pedirCadena(mensaje);
+                nombreObra = Leer.pedirCadena(mensaje);
 
                 // Comprobacion de que la obra introducida existe
                 for (ObraEntity o : listaObras) {
@@ -72,7 +73,6 @@ public class ConsultarObras {
         } finally {
             em.close();
         }
-
 
         return obra;
     }
